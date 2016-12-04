@@ -1,7 +1,7 @@
 """ This module contain basic evaluation required for model """
 import numpy as np
 
-N = 50  # Grid size
+N = 100  # Grid size
 U_0 = np.zeros((N, N))  # Start velocity in x direction
 V_0 = np.zeros((N, N))  # Start velocity in y direction
 
