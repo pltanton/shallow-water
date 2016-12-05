@@ -10,10 +10,10 @@ if __name__ == '__main__':
 
     typ = 'droplet'
     if typ == 'droplet':
-        x,y = np.mgrid[:core.base.N,:core.base.N]
+        x, y = np.mgrid[:core.base.N, :core.base.N]
         droplet_x, droplet_y = 50, 50
         rr = (x-droplet_x)**2 + (y-droplet_y)**2
-        h[rr<10**2] = 3
+        h[rr < 10**2] = 3
     elif typ == 'wall':
         print('here')
         h[:, :30] = 2

@@ -1,27 +1,31 @@
-from . import base
 from . import evaluator
+from . import base
 import numpy as np
 
 DT = base.GRID_SPACING / 100
 
 
-class Euler(evaluator.Evaluator):
+class RungeKutta(evaluator.Evaluator):
     def __init__(self, b=0):
         self.b = b
 
     def evolve(self, h, u, v, g, dt=DT):
-        """
-        This function v returns generator, which generates euler model steps
-        constantly, starts by some given initial state.
-        """
         time = 0
         yield h, u, v, time
 
         while True:
-            delta_dt, du_dt, dv_dt = base.d_dt(h, u, v, g, self.b)
-            h += delta_dt * dt
-            u += du_dt * dt
-            v += dv_dt * dt
+            k1_h, k1_u, k1_v = base.k_1(h, u, v, g, self.b)
+            k2_h, k2_u, k2_v = base.k_2(h, u, v, g, self.b)
+            k3_h, k3_u, k3_v = base.k_3(h, u, v, g, self.b)
+            k4_h, k4_u, k4_v = base.k_4(h, u, v, g, self.b)
+
+            dh = (dt / 6) * (k1_h + 2 * k2_h + 2 * k3_h + k4_h)
+            du = (dt / 6) * (k1_u + 2 * k2_u + 2 * k3_u + k4_u)
+            dv = (dt / 6) * (k1_v + 2 * k2_v + 2 * k3_v + k4_v)
+
+            h += dh
+            u += du
+            v += dv
 
             time += dt
 
@@ -50,8 +54,8 @@ if __name__ == '__main__':
     rr = (x - droplet_x) ** 2 + (y - droplet_y) ** 2
     h[rr < 10 ** 2] = 3
     # Init generator
-    euler = Euler.evolve(h, u, v, g, dt)
-    h, u, v, time = next(euler)
+    rungekutta = RungeKutta.evolve(h, u, v, g, dt)
+    h, u, v, time = next(rungekutta)
 
     p = gl.GLSurfacePlotItem(z=h, shader='heightColor', color=(0.5, 0.5, 1, 1),
                              smooth=False)
@@ -60,15 +64,3 @@ if __name__ == '__main__':
     p.translate(-base.N / 8, -base.N / 8, 0)
     p.scale(0.25, 0.25, 1.0)
     w.addItem(p)
-
-
-    def update():
-        global p, euler
-        p.setData(z=next(euler)[0])
-
-
-    timer = QtCore.QTimer()
-    timer.timeout.connect(update)
-    timer.start(0)
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        QtGui.QApplication.instance().exec_()
