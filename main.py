@@ -20,4 +20,5 @@ if __name__ == '__main__':
 
     renderer = core.renderer.Renderer()
     euler = core.euler.Euler(2)
-    renderer.run(h, u, v, g, dt, euler)
+    rk = core.runge_kutta.RungeKutta(2)
+    renderer.run(h, u, v, g, dt, rk)
