@@ -6,7 +6,7 @@ if __name__ == '__main__':
     u = core.base.U_0
     v = core.base.V_0
     g = core.base.G
-    dt = 0.0001
+    dt = 0.0003
 
     typ = 'droplet'
     if typ == 'droplet':
@@ -19,6 +19,6 @@ if __name__ == '__main__':
         h[:, :30] = 2
 
     renderer = core.renderer.Renderer()
-    euler = core.euler.Euler(2)
-    rk = core.runge_kutta.RungeKutta(2)
+    euler = core.euler.Euler(1)
+    rk = core.runge_kutta.RungeKutta(100, 1)
     renderer.run(h, u, v, g, dt, rk)
