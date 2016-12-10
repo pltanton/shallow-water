@@ -6,8 +6,9 @@ DT = base.GRID_SPACING / 100
 
 
 class Euler(evaluator.Evaluator):
-    def __init__(self, b=0):
+    def __init__(self, b=0, H=np.zeros((100, 100))):
         self.b = b
+        self.H = H
 
     def evolve(self, h, u, v, g, dt=DT):
         """
@@ -18,7 +19,7 @@ class Euler(evaluator.Evaluator):
         yield h, u, v, time
 
         while True:
-            delta_dt, du_dt, dv_dt = base.d_dt(h, u, v, g, self.b)
+            delta_dt, du_dt, dv_dt = base.d_dt(h, u, v, g, self.b, self.H)
             h += delta_dt * dt
             u += du_dt * dt
             v += dv_dt * dt

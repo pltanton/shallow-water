@@ -5,7 +5,7 @@ N = 100  # Grid size
 U_0 = np.zeros((N, N))  # Start velocity in x direction
 V_0 = np.zeros((N, N))  # Start velocity in y direction
 
-H_0 = np.ones((N, N))  # Start values of heights
+H_0 = np.zeros((N, N))  # Start values of heights
 
 # Some modeling constants
 G = 1.  # Gravity
@@ -24,7 +24,16 @@ def spatial_derivative(A, axis=0):
         d_dx
         d_dy
     """
-    return (np.roll(A, -1, axis) - np.roll(A, 1, axis)) / (GRID_SPACING * 2.)
+    fst = np.roll(A, -1, axis)
+    snd = np.roll(A, 1, axis)
+    # if axis == 0:
+        # fst[-1,] = A[-1,]
+        # snd[0,] = A[0,]
+    # elif axis == 1:
+        # fst[:,-1] = A[:,-1]
+        # snd[:,0] = A[:,0]
+
+    return (fst - snd) / (GRID_SPACING * 2.)
 
 
 def d_dx(h):
@@ -40,8 +49,8 @@ def d_dt(h, u, v, g, b=0, H=0):
     Non conservative form from wiki
     """
 
-    du_dt = -g * d_dx(h) - b * u
-    dv_dt = -g * d_dy(h) - b * v
+    du_dt = -g * d_dx(h) - b * u - u * d_dx(u) - v * d_dy(u)
+    dv_dt = -g * d_dy(h) - b * v - u * d_dx(v) - v * d_dy(v)
 
     delta_dt = -d_dx(u * (H + h)) - d_dy(v * (H + h))
 
