@@ -27,6 +27,10 @@ class RungeKutta(evaluator.Evaluator):
         yield h, u, v, time
 
         while True:
+            v[-1,:] = np.zeros((100,))
+            v[0,:] = -0.9 * v[1,:]
+            u[:,-1] = np.zeros((100,))
+            u[:,0] = -0.9 * u[:,1]
             y0 = base.d_dt(h, u, v, g, self.b, self.H)
             k1 = y0
             k2 = self.k_2_3(y0, k1, dt)
